@@ -94,6 +94,53 @@ impl<String: std::fmt::Debug + for<'a> std::cmp::PartialEq<&'a str>> Arbol<Strin
 
         None
     }
+
+    pub fn busqueda_profundidad_lim(
+        nodo: &Rc<RefCell<Self>>,       // nodo actual en la función
+        espacio: usize,
+        profundidad: i32,
+        visitados: &mut HashSet<usize>, //hash set de las ciudades que ya fueron visitadas para evitar ciclos infinitos
+        ciudad_destino: &str,           // ciudad que se quiere encontrar
+        limite: i32
+    ) -> Option<Rc<RefCell<Self>>> {
+        let nodo_ptr = Rc::as_ptr(nodo) as usize; // apuntador al nodo actual
+        if visitados.contains(&nodo_ptr) {
+            return None; // si está en el hashset regresa none
+        }
+        visitados.insert(nodo_ptr); // si no, continúa e ingresa el nodo actual a los ya visitados
+
+        if nodo.borrow().ciudad.eq(&ciudad_destino) {
+            println!(
+                "{:indent$}{:?} <--*", // formato del string
+                "",
+                nodo.borrow().ciudad, // nombre de la ciudad
+                indent = espacio * 2  // espacios para indentar
+            );
+            return Some(nodo.clone()); // si encontrado regresa el nodo entero
+        }
+
+        println!( // imprimir ciudad aunque no tenga coincidencia
+            "{:indent$}{:?}",
+            "",
+            nodo.borrow().ciudad,
+            indent = espacio * 2
+        );
+
+        // iterar en todos los nodos hijo del nodo actual y aplicar función
+        for child in &nodo.borrow().hojas {
+            // asignar el valor del nodo si regresa un valor del mismo tipo (encuentra la ciudad)
+            if let Some(nodo_destino) =
+            Arbol::busqueda_profundidad_lim(child, espacio + 1, profundidad + 1, visitados, ciudad_destino, limite)
+            {
+                return Some(nodo_destino);
+            }
+            if profundidad >= limite {
+                return None;
+            }
+        }
+
+        None
+    }
 }
 
 fn main() {
@@ -188,8 +235,15 @@ fn main() {
 
     let mut visitados = HashSet::new();
     // Arbol::profundidad_todos(&oradea, 0, &mut visited, "bucarest");
-    let res = Arbol::busqueda_profundidad(&oradea, 0, &mut visitados, "iasi");
-    if res.is_some() {
+    // let res = Arbol::busqueda_profundidad(&oradea, 0, &mut visitados, "iasi");
+    // if res.is_some() {
+    //     println!("Encontrado");
+    // } else {
+    //     println!("No encontrado");
+    // }
+
+    let reslim = Arbol::busqueda_profundidad_lim(&oradea, 0, 0, &mut visitados, "iasi", 8);
+    if reslim.is_some() {
         println!("Encontrado");
     } else {
         println!("No encontrado");
