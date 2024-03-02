@@ -134,7 +134,7 @@ impl<String: std::fmt::Debug + for<'a> std::cmp::PartialEq<&'a str>> Arbol<Strin
             {
                 return Some(nodo_destino);
             }
-            if profundidad >= limite {
+            if profundidad >= limite { // comprobar limite de la busqueda, si es mayor o igual regresar
                 return None;
             }
         }
