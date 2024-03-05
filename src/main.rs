@@ -3,14 +3,14 @@ use std::collections::HashSet;
 use std::rc::Rc;
 
 #[derive(Debug)]
-pub struct Arbol<T> {
+pub struct Nodo<T> {
     ciudad: T,
-    hojas: Vec<Rc<RefCell<Arbol<T>>>>,
+    hojas: Vec<Rc<RefCell<Nodo<T>>>>,
 }
 
-impl<String: std::fmt::Debug + for<'a> std::cmp::PartialEq<&'a str>> Arbol<String> {
+impl<String: std::fmt::Debug + for<'a> std::cmp::PartialEq<&'a str>> Nodo<String> {
     pub fn new(value: String) -> Rc<RefCell<Self>> {
-        Rc::new(RefCell::new(Arbol {
+        Rc::new(RefCell::new(Nodo {
             ciudad: value,
             hojas: Vec::new(),
         }))
@@ -49,7 +49,7 @@ impl<String: std::fmt::Debug + for<'a> std::cmp::PartialEq<&'a str>> Arbol<Strin
         );
 
         for child in &nodo_origen.borrow().hojas {
-            Arbol::profundidad_todos(child, depth + 1, visitados, ciudad_destino);
+            Nodo::profundidad_todos(child, depth + 1, visitados, ciudad_destino);
         }
     }
 
@@ -65,7 +65,7 @@ impl<String: std::fmt::Debug + for<'a> std::cmp::PartialEq<&'a str>> Arbol<Strin
         }
         visitados.insert(nodo_ptr); // si no, continúa e ingresa el nodo actual a los ya visitados
 
-        if nodo.borrow().ciudad.eq(&ciudad_destino) {
+        if nodo.borrow().ciudad.eq(&ciudad_destino) { // verificar si la ciudad en el nodo actual es la meta
             println!(
                 "{:indent$}{:?} <--*", // formato del string
                 "",
@@ -86,7 +86,7 @@ impl<String: std::fmt::Debug + for<'a> std::cmp::PartialEq<&'a str>> Arbol<Strin
         for child in &nodo.borrow().hojas {
             // asignar el valor del nodo si regresa un valor del mismo tipo (encuentra la ciudad)
             if let Some(nodo_destino) =
-                Arbol::busqueda_profundidad(child, espacio + 1, visitados, ciudad_destino)
+                Nodo::busqueda_profundidad(child, espacio + 1, visitados, ciudad_destino)
             {
                 return Some(nodo_destino);
             }
@@ -130,7 +130,7 @@ impl<String: std::fmt::Debug + for<'a> std::cmp::PartialEq<&'a str>> Arbol<Strin
         for child in &nodo.borrow().hojas {
             // asignar el valor del nodo si regresa un valor del mismo tipo (encuentra la ciudad)
             if let Some(nodo_destino) =
-            Arbol::busqueda_profundidad_lim(child, espacio + 1, profundidad + 1, visitados, ciudad_destino, limite)
+            Nodo::busqueda_profundidad_lim(child, espacio + 1, profundidad + 1, visitados, ciudad_destino, limite)
             {
                 return Some(nodo_destino);
             }
@@ -145,107 +145,106 @@ impl<String: std::fmt::Debug + for<'a> std::cmp::PartialEq<&'a str>> Arbol<Strin
 
 fn main() {
     //ciudades
-    let oradea: Rc<RefCell<Arbol<&str>>> = Arbol::new("oradea");
-    let zerind = Arbol::new("zerind");
-    let arad = Arbol::new("arad");
-    let sibiu = Arbol::new("sibiu");
-    let timisoara = Arbol::new("timisoara");
-    let lugoj = Arbol::new("lugoj");
-    let mehadia = Arbol::new("mehadia");
-    let dobreta = Arbol::new("dobreta");
-    let craiova = Arbol::new("craiova");
-    let rimnicu_vilcea = Arbol::new("rimnicu_vilcea");
-    let pitesti = Arbol::new("pitesti");
-    let bucarest = Arbol::new("bucarest");
-    let giurgiu = Arbol::new("giurgiu");
-    let fagaras = Arbol::new("fagaras");
-    let urziceni = Arbol::new("urziceni");
-    let vaslui = Arbol::new("vaslui");
-    let iasi = Arbol::new("iasi");
-    let neamt = Arbol::new("neamt");
-    let hirsova = Arbol::new("hirsova");
-    let eforie = Arbol::new("eforie");
+    let oradea = Nodo::new("oradea");
+    let zerind = Nodo::new("zerind");
+    let arad = Nodo::new("arad");
+    let sibiu = Nodo::new("sibiu");
+    let timisoara = Nodo::new("timisoara");
+    let lugoj = Nodo::new("lugoj");
+    let mehadia = Nodo::new("mehadia");
+    let dobreta = Nodo::new("dobreta");
+    let craiova = Nodo::new("craiova");
+    let rimnicu_vilcea = Nodo::new("rimnicu_vilcea");
+    let pitesti = Nodo::new("pitesti");
+    let bucarest = Nodo::new("bucarest");
+    let giurgiu = Nodo::new("giurgiu");
+    let fagaras = Nodo::new("fagaras");
+    let urziceni = Nodo::new("urziceni");
+    let vaslui = Nodo::new("vaslui");
+    let iasi = Nodo::new("iasi");
+    let neamt = Nodo::new("neamt");
+    let hirsova = Nodo::new("hirsova");
+    let eforie = Nodo::new("eforie");
 
     //rutas ciudad-ciudad
-    Arbol::anadir_hoja(oradea.clone(), zerind.clone());
-    Arbol::anadir_hoja(oradea.clone(), sibiu.clone());
+    Nodo::anadir_hoja(oradea.clone(), zerind.clone());
+    Nodo::anadir_hoja(oradea.clone(), sibiu.clone());
 
-    Arbol::anadir_hoja(zerind.clone(), oradea.clone());
-    Arbol::anadir_hoja(zerind.clone(), arad.clone());
+    Nodo::anadir_hoja(zerind.clone(), oradea.clone());
+    Nodo::anadir_hoja(zerind.clone(), arad.clone());
 
-    Arbol::anadir_hoja(arad.clone(), zerind.clone());
-    Arbol::anadir_hoja(arad.clone(), sibiu.clone());
-    Arbol::anadir_hoja(arad.clone(), timisoara.clone());
+    Nodo::anadir_hoja(arad.clone(), zerind.clone());
+    Nodo::anadir_hoja(arad.clone(), sibiu.clone());
+    Nodo::anadir_hoja(arad.clone(), timisoara.clone());
 
-    Arbol::anadir_hoja(sibiu.clone(), oradea.clone());
-    Arbol::anadir_hoja(sibiu.clone(), arad.clone());
-    Arbol::anadir_hoja(sibiu.clone(), fagaras.clone());
-    Arbol::anadir_hoja(sibiu.clone(), rimnicu_vilcea.clone());
+    Nodo::anadir_hoja(sibiu.clone(), oradea.clone());
+    Nodo::anadir_hoja(sibiu.clone(), arad.clone());
+    Nodo::anadir_hoja(sibiu.clone(), fagaras.clone());
+    Nodo::anadir_hoja(sibiu.clone(), rimnicu_vilcea.clone());
 
-    Arbol::anadir_hoja(timisoara.clone(), arad.clone());
-    Arbol::anadir_hoja(timisoara.clone(), lugoj.clone());
+    Nodo::anadir_hoja(timisoara.clone(), arad.clone());
+    Nodo::anadir_hoja(timisoara.clone(), lugoj.clone());
 
-    Arbol::anadir_hoja(lugoj.clone(), mehadia.clone());
-    Arbol::anadir_hoja(lugoj.clone(), timisoara.clone());
+    Nodo::anadir_hoja(lugoj.clone(), mehadia.clone());
+    Nodo::anadir_hoja(lugoj.clone(), timisoara.clone());
 
-    Arbol::anadir_hoja(mehadia.clone(), lugoj.clone());
-    Arbol::anadir_hoja(mehadia.clone(), dobreta.clone());
+    Nodo::anadir_hoja(mehadia.clone(), lugoj.clone());
+    Nodo::anadir_hoja(mehadia.clone(), dobreta.clone());
 
-    Arbol::anadir_hoja(dobreta.clone(), mehadia.clone());
-    Arbol::anadir_hoja(dobreta.clone(), craiova.clone());
+    Nodo::anadir_hoja(dobreta.clone(), mehadia.clone());
+    Nodo::anadir_hoja(dobreta.clone(), craiova.clone());
 
-    Arbol::anadir_hoja(craiova.clone(), dobreta.clone());
-    Arbol::anadir_hoja(craiova.clone(), rimnicu_vilcea.clone());
-    Arbol::anadir_hoja(craiova.clone(), pitesti.clone());
+    Nodo::anadir_hoja(craiova.clone(), dobreta.clone());
+    Nodo::anadir_hoja(craiova.clone(), rimnicu_vilcea.clone());
+    Nodo::anadir_hoja(craiova.clone(), pitesti.clone());
 
-    Arbol::anadir_hoja(rimnicu_vilcea.clone(), sibiu.clone());
-    Arbol::anadir_hoja(rimnicu_vilcea.clone(), pitesti.clone());
-    Arbol::anadir_hoja(rimnicu_vilcea.clone(), craiova.clone());
+    Nodo::anadir_hoja(rimnicu_vilcea.clone(), sibiu.clone());
+    Nodo::anadir_hoja(rimnicu_vilcea.clone(), pitesti.clone());
+    Nodo::anadir_hoja(rimnicu_vilcea.clone(), craiova.clone());
 
-    Arbol::anadir_hoja(fagaras.clone(), sibiu.clone());
-    Arbol::anadir_hoja(fagaras.clone(), bucarest.clone());
+    Nodo::anadir_hoja(fagaras.clone(), sibiu.clone());
+    Nodo::anadir_hoja(fagaras.clone(), bucarest.clone());
 
-    Arbol::anadir_hoja(pitesti.clone(), rimnicu_vilcea.clone());
-    Arbol::anadir_hoja(pitesti.clone(), bucarest.clone());
-    Arbol::anadir_hoja(pitesti.clone(), craiova.clone());
+    Nodo::anadir_hoja(pitesti.clone(), rimnicu_vilcea.clone());
+    Nodo::anadir_hoja(pitesti.clone(), bucarest.clone());
+    Nodo::anadir_hoja(pitesti.clone(), craiova.clone());
 
-    Arbol::anadir_hoja(bucarest.clone(), fagaras.clone());
-    Arbol::anadir_hoja(bucarest.clone(), pitesti.clone());
-    Arbol::anadir_hoja(bucarest.clone(), giurgiu.clone());
-    Arbol::anadir_hoja(bucarest.clone(), urziceni.clone());
+    Nodo::anadir_hoja(bucarest.clone(), fagaras.clone());
+    Nodo::anadir_hoja(bucarest.clone(), pitesti.clone());
+    Nodo::anadir_hoja(bucarest.clone(), giurgiu.clone());
+    Nodo::anadir_hoja(bucarest.clone(), urziceni.clone());
 
-    Arbol::anadir_hoja(giurgiu.clone(), bucarest.clone());
+    Nodo::anadir_hoja(giurgiu.clone(), bucarest.clone());
 
-    Arbol::anadir_hoja(urziceni.clone(), bucarest.clone());
-    Arbol::anadir_hoja(urziceni.clone(), hirsova.clone());
-    Arbol::anadir_hoja(urziceni.clone(), vaslui.clone());
+    Nodo::anadir_hoja(urziceni.clone(), bucarest.clone());
+    Nodo::anadir_hoja(urziceni.clone(), hirsova.clone());
+    Nodo::anadir_hoja(urziceni.clone(), vaslui.clone());
 
-    Arbol::anadir_hoja(hirsova.clone(), urziceni.clone());
-    Arbol::anadir_hoja(hirsova.clone(), eforie.clone());
+    Nodo::anadir_hoja(hirsova.clone(), urziceni.clone());
+    Nodo::anadir_hoja(hirsova.clone(), eforie.clone());
 
-    Arbol::anadir_hoja(eforie.clone(), hirsova.clone());
+    Nodo::anadir_hoja(eforie.clone(), hirsova.clone());
 
-    Arbol::anadir_hoja(vaslui.clone(), urziceni.clone());
-    Arbol::anadir_hoja(vaslui.clone(), iasi.clone());
+    Nodo::anadir_hoja(vaslui.clone(), urziceni.clone());
+    Nodo::anadir_hoja(vaslui.clone(), iasi.clone());
 
-    Arbol::anadir_hoja(iasi.clone(), neamt.clone());
-    Arbol::anadir_hoja(iasi.clone(), vaslui.clone());
+    Nodo::anadir_hoja(iasi.clone(), neamt.clone());
+    Nodo::anadir_hoja(iasi.clone(), vaslui.clone());
 
-    Arbol::anadir_hoja(neamt.clone(), iasi.clone());
+    Nodo::anadir_hoja(neamt.clone(), iasi.clone());
 
     let mut visitados = HashSet::new();
-    // Arbol::profundidad_todos(&oradea, 0, &mut visited, "bucarest");
-    // let res = Arbol::busqueda_profundidad(&oradea, 0, &mut visitados, "iasi");
-    // if res.is_some() {
-    //     println!("Encontrado");
-    // } else {
-    //     println!("No encontrado");
-    // }
-
-    let reslim = Arbol::busqueda_profundidad_lim(&oradea, 0, 0, &mut visitados, "iasi", 8);
-    if reslim.is_some() {
+    let res = Nodo::busqueda_profundidad(&oradea, 0, &mut visitados, "iasi");
+    if res.is_some() {
         println!("Encontrado");
     } else {
         println!("No encontrado");
     }
+
+    // let reslim = Nodo::busqueda_profundidad_lim(&oradea, 0, 0, &mut visitados, "iasi", 8);
+    // if reslim.is_some() {
+    //     println!("Encontrado");
+    // } else {
+    //     println!("No encontrado");
+    // }
 }
